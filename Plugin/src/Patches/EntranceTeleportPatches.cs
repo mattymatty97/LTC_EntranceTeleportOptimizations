@@ -28,9 +28,9 @@ internal static class EntranceTeleportPatches
     internal static float GetEnemyDetectionRange(EntranceTeleport @this)
     {
         if (@this.isEntranceToBuilding)
-            return EntranceTeleportOptimizations.PluginConfig.InsideEnemyDetectionRange.Value;
+            return EntranceTeleportOptimizations.PluginConfig.InsideEnemyDetectionRangeConfig.Value;
 
-        return EntranceTeleportOptimizations.PluginConfig.OutsideEnemyDetectionRange.Value;
+        return EntranceTeleportOptimizations.PluginConfig.OutsideEnemyDetectionRangeConfig.Value;
     }
 
     [HarmonyFinalizer]
@@ -49,7 +49,7 @@ internal static class EntranceTeleportPatches
             EntranceTeleportOptimizations.Log.LogError($"Found FireExit with id {__instance.entranceId}");
 
         //force any fireExit generated in the dungeon to 1
-        if (EntranceTeleportOptimizations.PluginConfig.PatchPrefabIDs.Value)
+        if (EntranceTeleportOptimizations.PluginConfig.PatchPrefabIDsConfig.Value)
             __instance.entranceId = 1;
     }
 
@@ -77,7 +77,7 @@ internal static class EntranceTeleportPatches
 
         var injector = new ILInjector(codes, ilGenerator);
 
-        if (EntranceTeleportOptimizations.PluginConfig.DetectEnemyBothSides.Value)
+        if (EntranceTeleportOptimizations.PluginConfig.DetectEnemyBothSidesConfig.Value)
         {
             // - if (triggerScript == null || !isEntranceToBuilding)
             // + if (triggerScript == null)
@@ -308,9 +308,9 @@ internal static class EntranceTeleportPatches
             __result = true;
 
             if (!__instance.isEntranceToBuilding &&
-                EntranceTeleportOptimizations.PluginConfig.RenameInteriorGameObjects.Value)
+                EntranceTeleportOptimizations.PluginConfig.RenameInteriorGameObjectsConfig.Value)
             {
-                __instance.gameObject.name = $"{entranceTeleport.gameObject.name} (Exit)";
+                __instance.gameObject.name = $"{entranceTeleport.gameObject.name} (Interior)";
             }
 
             break;

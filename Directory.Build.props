@@ -11,7 +11,7 @@
         <InformationalVersion>$(Version)</InformationalVersion>
         <Authors>mattymatty</Authors>
 
-        <AssemblyDescription>Example Description.</AssemblyDescription>
+        <AssemblyDescription>Mod to optimize EntranceTeleport scripts</AssemblyDescription>
 
         <!-- Assembly Metadata -->
         <AssemblyConfiguration>Release</AssemblyConfiguration>

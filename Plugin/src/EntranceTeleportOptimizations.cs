@@ -53,12 +53,15 @@ namespace EntranceTeleportOptimizations
 
         internal static class PluginConfig
         {
-            internal static ConfigEntry<bool> PatchPrefabIDs;
-            internal static ConfigEntry<bool> RenameInteriorGameObjects;
+            internal static ConfigEntry<bool> PatchPrefabIDsConfig;
+            internal static ConfigEntry<bool> RenameInteriorGameObjectsConfig;
 
-            internal static ConfigEntry<bool> DetectEnemyBothSides;
-            internal static ConfigEntry<float> InsideEnemyDetectionRange;
-            internal static ConfigEntry<float> OutsideEnemyDetectionRange;
+            internal static ConfigEntry<bool> DetectEnemyBothSidesConfig;
+            internal static ConfigEntry<float> InsideEnemyDetectionRangeConfig;
+            internal static ConfigEntry<float> OutsideEnemyDetectionRangeConfig;
+
+            internal const float InsideEnemyDetectionRange = 7.7f;
+            internal const float OutsideEnemyDetectionRange = 30f;
 
             internal static void Init()
             {
@@ -67,32 +70,36 @@ namespace EntranceTeleportOptimizations
                 config.SaveOnConfigSet = false;
                 //Initialize Configs
 
-                PatchPrefabIDs = config.Bind("Fixes", "fix_prefab_IDs", true,
+                PatchPrefabIDsConfig = config.Bind("Fixes", "fix_prefab_IDs", true,
                     "force all interior teleports ( except main ) to an ID of 1 on spawn");
 
-                DetectEnemyBothSides = config.Bind("Extra", "detect_enemy_both_sides", false,
+                DetectEnemyBothSidesConfig = config.Bind("Extra", "detect_enemy_both_sides", false,
                     "allow interior teleports to detect enemies on the outside");
-                InsideEnemyDetectionRange = config.Bind("Extra", "inside_enemy_detection_range", 7.7f,
-                    new ConfigDescription(
-                        "how close an enemy has to be from the teleport for it to show [Near activity detected!]",
-                        new AcceptableValueRange<float>(1f, 100f)));
-                OutsideEnemyDetectionRange = config.Bind("Extra", "outside_enemy_detection_range", 30f,
+
+                InsideEnemyDetectionRangeConfig = config.Bind("Extra", "inside_enemy_detection_range",
+                    InsideEnemyDetectionRange,
                     new ConfigDescription(
                         "how close an enemy has to be from the teleport for it to show [Near activity detected!]",
                         new AcceptableValueRange<float>(1f, 100f)));
 
-                RenameInteriorGameObjects = config.Bind("Debug", "rename_interior_gameobjects", false,
+                OutsideEnemyDetectionRangeConfig = config.Bind("Extra", "outside_enemy_detection_range",
+                    OutsideEnemyDetectionRange,
+                    new ConfigDescription(
+                        "how close an enemy has to be from the teleport for it to show [Near activity detected!]",
+                        new AcceptableValueRange<float>(1f, 100f)));
+
+                RenameInteriorGameObjectsConfig = config.Bind("Debug", "rename_interior_gameobjects", false,
                     "rename interior teleports to match their connected exterior teleports");
 
                 if (LethalConfigProxy.Enabled)
                 {
-                    LethalConfigProxy.AddConfig(PatchPrefabIDs, true);
+                    LethalConfigProxy.AddConfig(PatchPrefabIDsConfig, true);
 
-                    LethalConfigProxy.AddConfig(DetectEnemyBothSides, true);
-                    LethalConfigProxy.AddConfig(InsideEnemyDetectionRange, false);
-                    LethalConfigProxy.AddConfig(OutsideEnemyDetectionRange, false);
+                    LethalConfigProxy.AddConfig(DetectEnemyBothSidesConfig, true);
+                    LethalConfigProxy.AddConfig(InsideEnemyDetectionRangeConfig, false);
+                    LethalConfigProxy.AddConfig(OutsideEnemyDetectionRangeConfig, false);
 
-                    LethalConfigProxy.AddConfig(RenameInteriorGameObjects, true);
+                    LethalConfigProxy.AddConfig(RenameInteriorGameObjectsConfig, true);
                 }
 
                 config.SaveOnConfigSet = true;

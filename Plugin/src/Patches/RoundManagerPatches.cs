@@ -214,8 +214,8 @@ public static class RoundManagerPatches
                 //call the function in case a mod is listening for it
                 exit.FindExitPoint();
 
-                if (EntranceTeleportOptimizations.PluginConfig.RenameInteriorGameObjects.Value)
-                    exit.gameObject.name = $"{entrance.gameObject.name} (Exit)";
+                if (EntranceTeleportOptimizations.PluginConfig.RenameInteriorGameObjectsConfig.Value)
+                    exit.gameObject.name = $"{entrance.gameObject.name} (Interior)";
             }
 
             EntranceTeleportOptimizations.Log.LogWarning(
