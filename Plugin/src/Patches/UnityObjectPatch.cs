@@ -5,6 +5,8 @@ using HarmonyLib;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
+// ReSharper disable CoVariantArrayConversion
+
 namespace EntranceTeleportOptimizations.Patches;
 
 [HarmonyPatch]
@@ -56,7 +58,7 @@ internal static class UnityObjectPatch
         return false;
     }
 
-    private static IEnumerable<Object> GetFilteredTeleports(bool includeInactive)
+    private static IEnumerable<EntranceTeleport> GetFilteredTeleports(bool includeInactive)
     {
         var enumerator = EntranceTeleportPatches.TeleportList
             .Where(s => s != null);
