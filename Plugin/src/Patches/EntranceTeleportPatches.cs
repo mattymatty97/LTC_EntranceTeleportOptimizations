@@ -112,9 +112,9 @@ internal static class EntranceTeleportPatches
                 ILMatcher.Ldarg().CaptureAs(out var loadThis),
                 ILMatcher.Ldfld(typeof(EntranceTeleport).GetField(nameof(EntranceTeleport.gotExitPoint),
                     BindingFlags.Instance | BindingFlags.NonPublic)),
-                ILMatcher.Branch().CaptureOperandAs(out Label continueLabel),
+                ILMatcher.Branch().CaptureOperandAs(out Label trueLabel),
             ])
-            .FindLabel(continueLabel);
+            .FindLabel(trueLabel);
 
         if (!injector.IsValid)
         {
@@ -214,7 +214,7 @@ internal static class EntranceTeleportPatches
                 new CodeInstruction(OpCodes.Call, unityEqualityMethod),
                 new CodeInstruction(OpCodes.Brfalse, afterCheck),
                 new CodeInstruction(OpCodes.Pop),
-                new CodeInstruction(OpCodes.Br, continueLabel),
+                new CodeInstruction(OpCodes.Br, loopContinue),
             ])
             .AddLabel(afterCheck);
 

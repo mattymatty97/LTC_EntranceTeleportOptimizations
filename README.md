@@ -5,7 +5,7 @@ EntranceTeleportOptimizations
 [![Thunderstore Downloads](https://img.shields.io/thunderstore/dt/mattymatty/EntranceTeleportOptimizations?style=flat&logo=thunderstore&logoColor=white&label=thunderstore)](https://thunderstore.io/c/lethal-company/p/mattymatty/EntranceTeleportOptimizations/)
 
 **EntranceTeleportOptimizations** is a focused on the performance of the `EntranceTeleport` system (FireExits & Main).  
-It improves performance during teleport usage and dungeon generation when using mods like **Loadestone**.
+It improves performance during teleport usage and dungeon generation when using mods like **Loadstone**.
 
 ---
 
