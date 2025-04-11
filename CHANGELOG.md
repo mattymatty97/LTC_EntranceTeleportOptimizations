@@ -1,2 +1,2 @@
-### v1.0.0
-- WIP
+### v0.0.1
+- First Release
