@@ -269,6 +269,8 @@ internal static class EntranceTeleportPatches
             if (hasValue && destination && destination.entranceId == __instance.entranceId)
             {
                 __result = true;
+                if (!__runOriginal)
+                    __instance.exitPoint = destination.entrancePoint;
                 return false;
             }
 
