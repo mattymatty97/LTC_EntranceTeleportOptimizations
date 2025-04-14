@@ -1,3 +1,6 @@
+This Mod is still in BETA
+============
+
 EntranceTeleportOptimizations
 ============
 [![GitHub Release](https://img.shields.io/github/v/release/mattymatty97/LTC_EntranceTeleportOptimizations?display_name=release&logo=github&logoColor=white)](https://github.com/mattymatty97/LTC_EntranceTeleportOptimizations/releases/latest)
@@ -28,6 +31,11 @@ This can cause issues like:
 - Warping to the wrong fire exit
 
 This mod forces all **interior** teleports to use ID `1`, so the vanilla game can assign IDs correctly.
+
+### • NRE Fix
+The vanilla game sometimes creates an NRE spam when an enemy is destroyed without being removed from the internal `SpawnedEnemyList`
+
+This mod adds a `null` check to prevent this exception
 
 ---
 
