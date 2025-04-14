@@ -64,6 +64,75 @@ internal static class EntranceTeleportPatches
         TeleportMap.Remove(teleport);
     }
 
+    [HarmonyPrefix]
+    [HarmonyPriority(Priority.Last)]
+    [HarmonyPatch(typeof(EntranceTeleport), nameof(EntranceTeleport.FindExitPoint))]
+    private static bool ReplaceFindExitPoint(EntranceTeleport __instance, ref bool __result, bool __runOriginal)
+    {
+        if (!__runOriginal)
+        {
+            EntranceTeleportOptimizations.Log.LogWarning("Another mod is trying to suppress FindExitPoint!");
+        }
+
+        //if we already have an exit
+        if (__instance.exitPoint)
+        {
+            var hasValue = TeleportMap.TryGetValue(__instance, out var destination);
+            if (hasValue && destination && destination.entranceId == __instance.entranceId)
+            {
+                __result = true;
+                if (!__runOriginal)
+                    __instance.exitPoint = destination.entrancePoint;
+                return false;
+            }
+
+            if (!hasValue || !destination)
+            {
+                EntranceTeleportOptimizations.Log.LogWarning($"exitPoint for {__instance} was set outside this mod!");
+            }
+            else
+            {
+                EntranceTeleportOptimizations.Log.LogWarning(
+                    $"{__instance} was using ID {destination.entranceId} but now is {__instance.entranceId}!");
+            }
+        }
+
+        var isEntrance = __instance.isEntranceToBuilding;
+        var id = __instance.entranceId;
+
+        __result = false;
+        foreach (var entranceTeleport in TeleportList)
+        {
+            if (!entranceTeleport)
+                continue;
+
+            if (!entranceTeleport.isActiveAndEnabled)
+                continue;
+
+            if (entranceTeleport.isEntranceToBuilding == isEntrance)
+                continue;
+
+            if (entranceTeleport.entranceId != id)
+                continue;
+
+            __instance.exitPoint = entranceTeleport.entrancePoint;
+            __instance.exitPointAudio = entranceTeleport.entrancePointAudio;
+
+            TeleportMap[__instance] = entranceTeleport;
+            __result = true;
+
+            if (!__instance.isEntranceToBuilding &&
+                EntranceTeleportOptimizations.PluginConfig.RenameInteriorGameObjectsConfig.Value)
+            {
+                __instance.gameObject.name = $"{entranceTeleport.gameObject.name} (Interior)";
+            }
+
+            break;
+        }
+
+        return false;
+    }
+
     [HarmonyTranspiler]
     [HarmonyPatch(typeof(EntranceTeleport), nameof(EntranceTeleport.Update))]
     private static IEnumerable<CodeInstruction> PatchUpdate(IEnumerable<CodeInstruction> instructions,
@@ -249,75 +318,5 @@ internal static class EntranceTeleportPatches
         ]);
 
         return injector.ReleaseInstructions();
-    }
-
-
-    [HarmonyPrefix]
-    [HarmonyPriority(Priority.Last)]
-    [HarmonyPatch(typeof(EntranceTeleport), nameof(EntranceTeleport.FindExitPoint))]
-    private static bool ReplaceFindExitPoint(EntranceTeleport __instance, ref bool __result, bool __runOriginal)
-    {
-        if (!__runOriginal)
-        {
-            EntranceTeleportOptimizations.Log.LogWarning("Another mod is trying to suppress FindExitPoint!");
-        }
-
-        //if we already have an exit
-        if (__instance.exitPoint)
-        {
-            var hasValue = TeleportMap.TryGetValue(__instance, out var destination);
-            if (hasValue && destination && destination.entranceId == __instance.entranceId)
-            {
-                __result = true;
-                if (!__runOriginal)
-                    __instance.exitPoint = destination.entrancePoint;
-                return false;
-            }
-
-            if (!hasValue || !destination)
-            {
-                EntranceTeleportOptimizations.Log.LogWarning($"exitPoint for {__instance} was set outside this mod!");
-            }
-            else
-            {
-                EntranceTeleportOptimizations.Log.LogWarning(
-                    $"{__instance} was using ID {destination.entranceId} but now is {__instance.entranceId}!");
-            }
-        }
-
-        var isEntrance = __instance.isEntranceToBuilding;
-        var id = __instance.entranceId;
-
-        __result = false;
-        foreach (var entranceTeleport in TeleportList)
-        {
-            if (!entranceTeleport)
-                continue;
-
-            if (!entranceTeleport.isActiveAndEnabled)
-                continue;
-
-            if (entranceTeleport.isEntranceToBuilding == isEntrance)
-                continue;
-
-            if (entranceTeleport.entranceId != id)
-                continue;
-
-            __instance.exitPoint = entranceTeleport.entrancePoint;
-            __instance.exitPointAudio = entranceTeleport.entrancePointAudio;
-
-            TeleportMap[__instance] = entranceTeleport;
-            __result = true;
-
-            if (!__instance.isEntranceToBuilding &&
-                EntranceTeleportOptimizations.PluginConfig.RenameInteriorGameObjectsConfig.Value)
-            {
-                __instance.gameObject.name = $"{entranceTeleport.gameObject.name} (Interior)";
-            }
-
-            break;
-        }
-
-        return false;
     }
 }

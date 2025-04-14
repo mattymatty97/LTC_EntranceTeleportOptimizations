@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -6,6 +7,7 @@ using EntranceTeleportOptimizations.Utils.IL;
 using HarmonyLib;
 using UnityEngine;
 using UnityEngine.Pool;
+using Object = UnityEngine.Object;
 
 namespace EntranceTeleportOptimizations.Patches;
 
@@ -171,7 +173,7 @@ public static class RoundManagerPatches
 
                 if (!memory.TryGetValue(id, out var element))
                 {
-                    element = new();
+                    element = new ValueTuple<EntranceTeleport, EntranceTeleport>();
                 }
 
                 if (teleport.isEntranceToBuilding)
