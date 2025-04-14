@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using HarmonyLib;
 using UnityEngine;
+using UnityEngine.Pool;
 using Object = UnityEngine.Object;
 
 // ReSharper disable CoVariantArrayConversion
@@ -25,20 +25,20 @@ internal static class UnityObjectPatch
         if (type != typeof(EntranceTeleport))
             return true;
 
-        var enumerable = GetFilteredTeleports(findObjectsInactive != FindObjectsInactive.Exclude);
+        var unorderedArray = GetFilteredTeleports(findObjectsInactive != FindObjectsInactive.Exclude);
 
         switch (sortMode)
         {
             case FindObjectsSortMode.None:
-                __result = enumerable.ToArray();
                 break;
             case FindObjectsSortMode.InstanceID:
-                __result = enumerable.OrderBy(e => e.GetInstanceID()).ToArray();
+                Array.Sort(unorderedArray, InstanceComparer.INSTANCE);
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(sortMode), sortMode, null);
         }
 
+        __result = unorderedArray;
         return false;
     }
 
@@ -54,16 +54,38 @@ internal static class UnityObjectPatch
         if (type != typeof(EntranceTeleport))
             return true;
 
-        __result = GetFilteredTeleports(includeInactive).ToArray();
+        __result = GetFilteredTeleports(includeInactive);
         return false;
     }
 
-    private static IEnumerable<EntranceTeleport> GetFilteredTeleports(bool includeInactive)
+    private static EntranceTeleport[] GetFilteredTeleports(bool includeInactive)
     {
-        var enumerator = EntranceTeleportPatches.TeleportList
-            .Where(s => s != null);
-        if (!includeInactive)
-            enumerator = enumerator.Where(s => s.isActiveAndEnabled);
-        return enumerator;
+        using (ListPool<EntranceTeleport>.Get(out var tempList))
+        {
+            foreach (var teleport in EntranceTeleportPatches.TeleportList)
+            {
+                if (teleport == null)
+                    continue;
+
+                if (!includeInactive && !teleport.isActiveAndEnabled)
+                    continue;
+
+                tempList.Add(teleport);
+            }
+
+            return tempList.ToArray();
+        }
+    }
+
+    private readonly struct InstanceComparer : IComparer<Object>
+    {
+        internal static readonly InstanceComparer INSTANCE = new();
+
+        public int Compare(Object x, Object y)
+        {
+            if (y is null) return 1;
+            if (x is null) return -1;
+            return x.GetInstanceID().CompareTo(y.GetInstanceID());
+        }
     }
 }
