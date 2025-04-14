@@ -1,3 +1,6 @@
+### v0.0.4
+- WIP
+
 ### v0.0.3
 - Add shortcuts to `FindObjectsOfType` & `FindObjectsByType` using our managed list
 - make sure we always use our value if somebody else suppresses `FindExitPoint`

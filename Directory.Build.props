@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <!-- Common Versioning and Module Information -->
-        <Version>0.0.3</Version>
+        <Version>0.0.4</Version>
         <ModName>EntranceTeleportOptimizations</ModName>
         <ModGUID>mattymatty.EntranceTeleportOptimizations</ModGUID>
         <ModNameSpace>$(ModName)</ModNameSpace>
