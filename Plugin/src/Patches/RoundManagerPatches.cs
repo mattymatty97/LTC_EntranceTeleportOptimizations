@@ -166,6 +166,11 @@ public static class RoundManagerPatches
                 if (!teleport)
                     continue;
 
+                EntranceTeleportPatches.TeleportMap.Remove(teleport);
+                teleport.exitPoint = null;
+                teleport.exitPointAudio = null;
+                teleport.gotExitPoint = false;
+
                 if (!teleport.isActiveAndEnabled)
                     continue;
 

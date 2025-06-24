@@ -1,5 +1,7 @@
 ### v0.0.4
-- WIP
+
+- improve logging for special situations
+- fix infinite loop when a Null enemy is left in the list
 
 ### v0.0.3
 - Add shortcuts to `FindObjectsOfType` & `FindObjectsByType` using our managed list

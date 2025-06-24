@@ -81,14 +81,17 @@ internal static class EntranceTeleportPatches
             if (hasValue && destination && destination.entranceId == __instance.entranceId)
             {
                 __result = true;
-                if (!__runOriginal)
-                    __instance.exitPoint = destination.entrancePoint;
+                __instance.exitPoint = destination.entrancePoint;
                 return false;
             }
 
-            if (!hasValue || !destination)
+            if (!hasValue)
             {
                 EntranceTeleportOptimizations.Log.LogWarning($"exitPoint for {__instance} was set outside this mod!");
+            }
+            else if (!destination)
+            {
+                EntranceTeleportOptimizations.Log.LogWarning($"exitPoint for {__instance} was disabled or destroyed!");
             }
             else
             {
@@ -117,6 +120,7 @@ internal static class EntranceTeleportPatches
 
             __instance.exitPoint = entranceTeleport.entrancePoint;
             __instance.exitPointAudio = entranceTeleport.entrancePointAudio;
+            __instance.gotExitPoint = true;
 
             TeleportMap[__instance] = entranceTeleport;
             __result = true;
@@ -129,6 +133,12 @@ internal static class EntranceTeleportPatches
 
             break;
         }
+
+        TeleportMap.Remove(__instance);
+        __instance.exitPoint = null;
+        __instance.exitPointAudio = null;
+        __instance.gotExitPoint = false;
+        __result = false;
 
         return false;
     }
@@ -237,13 +247,12 @@ internal static class EntranceTeleportPatches
         var roundManagerSpawnedEnemiesField = typeof(RoundManager).GetField(nameof(RoundManager.SpawnedEnemies));
 
         injector.Find([
-                ILMatcher.Ldloc(),
-                ILMatcher.Call(roundManagerInstanceMethod),
-                ILMatcher.Ldfld(roundManagerSpawnedEnemiesField),
-                ILMatcher.Callvirt(typeof(List<EnemyAI>).GetProperty(nameof(List<EnemyAI>.Count))!.GetMethod),
-                ILMatcher.Branch().CaptureOperandAs(out Label loopStart)
-            ])
-            .FindLabel(loopStart);
+            ILMatcher.Ldloc(),
+            ILMatcher.Call(roundManagerInstanceMethod),
+            ILMatcher.Ldfld(roundManagerSpawnedEnemiesField),
+            ILMatcher.Callvirt(typeof(List<EnemyAI>).GetProperty(nameof(List<EnemyAI>.Count))!.GetMethod),
+            ILMatcher.Branch().CaptureOperandAs(out Label loopStart)
+        ]);
 
         if (!injector.IsValid)
         {
@@ -254,10 +263,24 @@ internal static class EntranceTeleportPatches
             return codes;
         }
 
+        injector.ReverseFind([
+            ILMatcher.Ldloc(),
+            ILMatcher.Ldc(),
+            ILMatcher.Opcode(OpCodes.Add),
+            ILMatcher.Stloc(),
+        ]);
 
-        injector.Back(1);
+        if (!injector.IsValid)
+        {
+            injector.GoToLastMatchedInstruction();
+            injector.PrintContext(30, $"{method.DeclaringType!.Name}.{method.Name}");
+            EntranceTeleportOptimizations.Log.LogError(
+                $"Failed to find continue label of enemies loop {nameof(EntranceTeleport.checkForEnemiesInterval)} in {method.DeclaringType!.Name}.{method.Name}");
+            return codes;
+        }
 
-        var loopContinue = (Label)injector.Instruction.operand;
+        injector.AddLabel(out var loopContinue)
+            .FindLabel(loopStart);
 
         injector.Find([
             ILMatcher.Call(roundManagerInstanceMethod),
@@ -285,7 +308,8 @@ internal static class EntranceTeleportPatches
                 new CodeInstruction(OpCodes.Pop),
                 new CodeInstruction(OpCodes.Br, loopContinue),
             ])
-            .AddLabel(afterCheck);
+            .AddLabel(afterCheck)
+            .PrintContext(30, "Edit");
 
         // - if (Vector3.Distance(RoundManager.Instance.SpawnedEnemies[i].transform.position, exitPoint.transform.position) < 7.7f
         // = && !RoundManager.Instance.SpawnedEnemies[i].isEnemyDead)
