@@ -1,5 +1,8 @@
-### v0.0.4
+### v0.0.5
 
+- move cleanup code behind condition
+
+### v0.0.4
 - improve logging for special situations
 - fix infinite loop when a Null enemy is left in the list
 

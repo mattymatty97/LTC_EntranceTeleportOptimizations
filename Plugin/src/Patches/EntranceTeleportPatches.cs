@@ -118,6 +118,8 @@ internal static class EntranceTeleportPatches
             if (entranceTeleport.entranceId != id)
                 continue;
 
+            //we found a matching teleport!
+
             __instance.exitPoint = entranceTeleport.entrancePoint;
             __instance.exitPointAudio = entranceTeleport.entrancePointAudio;
             __instance.gotExitPoint = true;
@@ -131,14 +133,17 @@ internal static class EntranceTeleportPatches
                 __instance.gameObject.name = $"{entranceTeleport.gameObject.name} (Interior)";
             }
 
-            break;
+            return false;
         }
 
-        TeleportMap.Remove(__instance);
-        __instance.exitPoint = null;
-        __instance.exitPointAudio = null;
-        __instance.gotExitPoint = false;
-        __result = false;
+        if (__result == false)
+        {
+            // no matching teleport was found!
+            TeleportMap.Remove(__instance);
+            __instance.exitPoint = null;
+            __instance.exitPointAudio = null;
+            __instance.gotExitPoint = false;
+        }
 
         return false;
     }
