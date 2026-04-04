@@ -1,5 +1,8 @@
-### v0.0.5
+### v1.0.0
 
+- Update to v80
+
+### v0.0.5
 - move cleanup code behind condition
 
 ### v0.0.4

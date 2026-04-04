@@ -1,6 +1,7 @@
 {
+  "$schema": "https://json.schemastore.org/tsconfig",
   "name": "EntranceTeleportOptimizations",
-  "version_number": "0.0.5",
+  "version_number": "1.0.0",
   "website_url": "https://github.com/mattymatty97/LTC_EntranceTeleportOptimizations",
   "description": "Mod to optimize EntranceTeleport scripts",
   "dependencies": [

@@ -16,10 +16,17 @@
 
         <PackageReference
                 Include="LethalCompany.GameLibs.Steam"
-                Version="64.0.0-ngd.0"
+                Version="81.2.0-*"
                 Private="False"
                 Publicize="True"
+                Condition="'$(GameLibsPath)'==''"
         />
+    </ItemGroup>
+
+    <!-- Fallback: reference DLLs directly from the game folder -->
+    <ItemGroup Condition="'$(GameLibsPath)'!=''">
+        <Reference Include="$(GameLibsPath)\Assembly-CSharp.dll" Private="False" Publicize="True"/>
+        <Reference Include="$(GameLibsPath)\Unity*.dll" Private="False" Publicize="True"/>
     </ItemGroup>
 
     <!--    <Target Name="NetcodePatch" AfterTargets="PostBuildEvent">

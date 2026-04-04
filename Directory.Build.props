@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <!-- Common Versioning and Module Information -->
-        <Version>0.0.5</Version>
+        <Version>1.0.0</Version>
         <ModName>EntranceTeleportOptimizations</ModName>
         <ModGUID>mattymatty.EntranceTeleportOptimizations</ModGUID>
         <ModNameSpace>$(ModName)</ModNameSpace>
@@ -55,6 +55,7 @@
             <DistributionDir>$(SolutionDir)\Output\dist</DistributionDir>
         </PropertyGroup>
 
+        <Message Importance="High" Text="'$(GameLibsPath)'"/>
         <Message Importance="High" Text="Emptying DistributionDir"/>
         <RemoveDir Directories="$(DistributionDir)"/>
         <MakeDir Directories="$(DistributionDir)"/>

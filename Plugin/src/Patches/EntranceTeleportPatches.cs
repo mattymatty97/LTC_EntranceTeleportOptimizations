@@ -75,13 +75,13 @@ internal static class EntranceTeleportPatches
         }
 
         //if we already have an exit
-        if (__instance.exitPoint)
+        if (__instance.exitScript)
         {
             var hasValue = TeleportMap.TryGetValue(__instance, out var destination);
             if (hasValue && destination && destination.entranceId == __instance.entranceId)
             {
                 __result = true;
-                __instance.exitPoint = destination.entrancePoint;
+                __instance.exitScript = destination;
                 return false;
             }
 
@@ -120,8 +120,7 @@ internal static class EntranceTeleportPatches
 
             //we found a matching teleport!
 
-            __instance.exitPoint = entranceTeleport.entrancePoint;
-            __instance.exitPointAudio = entranceTeleport.entrancePointAudio;
+            __instance.exitScript = entranceTeleport;
             __instance.gotExitPoint = true;
 
             TeleportMap[__instance] = entranceTeleport;
@@ -140,8 +139,7 @@ internal static class EntranceTeleportPatches
         {
             // no matching teleport was found!
             TeleportMap.Remove(__instance);
-            __instance.exitPoint = null;
-            __instance.exitPointAudio = null;
+            __instance.exitScript = null;
             __instance.gotExitPoint = false;
         }
 
@@ -212,7 +210,7 @@ internal static class EntranceTeleportPatches
         injector.RemoveLastMatch();
 
         // = checkForEnemiesInterval = 1f;
-        // + if (exitPoint == null)
+        // + if (exitScript == null)
         // +     return;
         injector.Find([
             ILMatcher.Ldarg(),
@@ -235,7 +233,7 @@ internal static class EntranceTeleportPatches
             .Insert([
                 loadThis,
                 new CodeInstruction(OpCodes.Ldfld,
-                    typeof(EntranceTeleport).GetField(nameof(EntranceTeleport.exitPoint))),
+                    typeof(EntranceTeleport).GetField(nameof(EntranceTeleport.exitScript))),
                 new CodeInstruction(OpCodes.Ldnull),
                 new CodeInstruction(OpCodes.Call, unityEqualityMethod),
                 new CodeInstruction(OpCodes.Brfalse, newContinueLabel),
@@ -313,8 +311,7 @@ internal static class EntranceTeleportPatches
                 new CodeInstruction(OpCodes.Pop),
                 new CodeInstruction(OpCodes.Br, loopContinue),
             ])
-            .AddLabel(afterCheck)
-            .PrintContext(30, "Edit");
+            .AddLabel(afterCheck);
 
         // - if (Vector3.Distance(RoundManager.Instance.SpawnedEnemies[i].transform.position, exitPoint.transform.position) < 7.7f
         // = && !RoundManager.Instance.SpawnedEnemies[i].isEnemyDead)

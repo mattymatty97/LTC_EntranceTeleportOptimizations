@@ -167,8 +167,7 @@ public static class RoundManagerPatches
                     continue;
 
                 EntranceTeleportPatches.TeleportMap.Remove(teleport);
-                teleport.exitPoint = null;
-                teleport.exitPointAudio = null;
+                teleport.exitScript = null;
                 teleport.gotExitPoint = false;
 
                 if (!teleport.isActiveAndEnabled)
@@ -208,15 +207,13 @@ public static class RoundManagerPatches
                 }
 
                 EntranceTeleportPatches.TeleportMap[entrance] = exit;
-                entrance.exitPoint = exit.entrancePoint;
-                entrance.exitPointAudio = exit.entrancePointAudio;
+                entrance.exitScript = exit;
                 entrance.gotExitPoint = true;
                 //call the function in case a mod is listening for it
                 entrance.FindExitPoint();
 
                 EntranceTeleportPatches.TeleportMap[exit] = entrance;
-                exit.exitPoint = entrance.entrancePoint;
-                exit.exitPointAudio = entrance.entrancePointAudio;
+                exit.exitScript = entrance;
                 exit.gotExitPoint = true;
                 //call the function in case a mod is listening for it
                 exit.FindExitPoint();
